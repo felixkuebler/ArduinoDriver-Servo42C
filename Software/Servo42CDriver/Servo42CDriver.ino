@@ -17,12 +17,8 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  mySerial.begin(9600);
-
+  mySerial.begin(115200);
   Serial.println("StartupFinished");
-
-
-
 }
 
 
@@ -39,9 +35,16 @@ void loop() { // run over and over
 */
 
   if (Serial.available()) {
-    Serial.read();
+
+    // clear searial buffer
+    while(Serial.available()) {
+      Serial.read();
+    }
+    
     if (toggle) {
-      servo.moveAngleRelative(-90, 50);
+      //servo.moveAngleRelative(90, 50, true);
+      //servo.moveAngleAbsolut(-90, 50, true);
+      servo.setZero();
       /*
       delay(100);
       int32_t angle = 0;
@@ -49,7 +52,23 @@ void loop() { // run over and over
       */
     }
     else {
-      servo.moveAngleRelative(90, -50);
+
+      // fetch current angle from motor
+      double angle = 0;
+      servo.readAngle(angle);
+      
+      Serial.print("Angle: ");
+      Serial.println(angle); 
+      
+      servo.moveAngleRelative(90, 50, true);
+
+      servo.readAngle(angle);
+      
+      Serial.print("Angle: ");
+      Serial.println(angle);
+      Serial.println("");
+      
+      //servo.moveAngleAbsolut(0, -50, true);
       /*
       delay(100);
       double angle = 0;
